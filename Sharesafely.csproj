@@ -11,4 +11,8 @@
       <PackageReference Include="Azure.Storage.Blobs" Version="12.21.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Dockerfile" />
+    </ItemGroup>
+
 </Project>

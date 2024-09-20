@@ -1,7 +1,21 @@
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.DependencyInjection;
+using Sharesafely.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+if (builder.Environment.IsDevelopment())
+{
+    // Use DefaultAzureCredential in development
+    builder.Services.AddSingleton(x =>
+        new BlobServiceClient(new Uri("https://sharesafelystorage1.blob.core.windows.net/"), new DefaultAzureCredential())
+    );
+}
+
+builder.Services.AddScoped<BlobService>();
 
 var app = builder.Build();
 

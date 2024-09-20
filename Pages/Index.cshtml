@@ -1,10 +1,79 @@
 ﻿@page
-@model IndexModel
-@{
-    ViewData["Title"] = "Home page";
+@model Sharesafely.Pages.IndexModel
+
+<h2>Upload Files</h2>
+
+<form method="post" enctype="multipart/form-data" id="uploadForm">
+    <div id="fileInputs">
+        <div class="file-input">
+            <label for="files">Choose files:</label>
+            <input type="file" name="files" multiple required />
+        </div>
+    </div>
+    <div id="selectedFiles"></div>
+    <div>
+        <button type="submit">Upload</button>
+    </div>
+</form>
+
+@if (Model.UploadResult != null)
+{
+<p>@Model.UploadResult</p>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Scripts {
+<script>
+    const fileInput = document.querySelector('input[type="file"]');
+    const selectedFilesDiv = document.getElementById('selectedFiles');
+
+    fileInput.addEventListener('change', function () {
+        selectedFilesDiv.innerHTML = ''; // Clear previous selections
+        Array.from(fileInput.files).forEach((file, index) => {
+            const fileEntry = document.createElement('div');
+            fileEntry.classList.add('file-entry');
+            fileEntry.textContent = file.name;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = function () {
+                removeFile(index);
+            };
+
+            fileEntry.appendChild(removeButton);
+            selectedFilesDiv.appendChild(fileEntry);
+        });
+    });
+
+    function removeFile(index) {
+        const dataTransfer = new DataTransfer();
+        const files = Array.from(fileInput.files);
+
+        // Add files to the DataTransfer object except the one being removed
+        files.forEach((file, i) => {
+            if (i !== index) {
+                dataTransfer.items.add(file);
+            }
+        });
+
+        fileInput.files = dataTransfer.files; // Update the file input
+        selectedFilesDiv.innerHTML = ''; // Clear the displayed files
+        // Re-display the remaining files
+        Array.from(dataTransfer.files).forEach((file, i) => {
+            const fileEntry = document.createElement('div');
+            fileEntry.classList.add('file-entry');
+            fileEntry.textContent = file.name;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = function () {
+                removeFile(i);
+            };
+
+            fileEntry.appendChild(removeButton);
+            selectedFilesDiv.appendChild(fileEntry);
+        });
+    }
+</script>
+}
